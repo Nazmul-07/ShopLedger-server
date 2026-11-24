@@ -5,8 +5,11 @@ const app: Express = express();
 
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "ShopLedger API is running",
+  });
 });
 
 app.use('/api/v1', allRoutes)
