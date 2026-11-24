@@ -1,0 +1,76 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum CategoryType {
+  PRODUCT
+  EXPENSE
+  BOTH
+}
+
+model Category {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  type CategoryType @default(PRODUCT)
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  products Product[]
+  expenses Expense[]
+  
+  @@unique([name, type])
+}
+
+model Product {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  categoryId String @db.ObjectId
+  costPrice Int
+  sellingPrice Int
+  stock Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  category Category @relation(fields: [categoryId], references: [id])
+
+  sales Sale[]
+}
+
+model Sale {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  productId String @db.ObjectId
+  quantity Int
+  unitPrice Int
+  costPrice Int
+  totalAmount Int
+  paidAmount Int
+  soldAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+
+
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Expense {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  categoryId String @db.ObjectId
+  title String
+  amount Int
+  description String?
+  expenseDate DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  category Category @relation(fields: [categoryId], references: [id])
+}
